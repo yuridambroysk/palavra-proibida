@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo do Mago - Palavra Proibida</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 1s;
+    }
+
+    .cenario {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 1s, color 1s;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .calmo {
+      background: linear-gradient(to top, #b3e5fc, #e1f5fe);
+      color: #000;
+    }
+
+    .caos {
+      background: linear-gradient(to top, #3e2723, #d50000);
+      color: #fff;
+      animation: tremer 0.2s infinite;
+    }
+
+    @keyframes tremer {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(2px, -2px); }
+      50% { transform: translate(-2px, 2px); }
+      75% { transform: translate(2px, 2px); }
+      100% { transform: translate(-2px, -2px); }
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .mensagem-proibida {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .calmo .mensagem-proibida,
+    .caos .mensagem-proibida {
+      display: block;
+    }
+
+    .caos .mensagem-proibida {
+      text-shadow: 2px 2px 6px #000;
+    }
+
+    .gif-harry {
+      width: 300px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="cenario" class="cenario calmo">
+    <h1>Diga a palavra proibida...</h1>
+    <input type="text" id="magia" placeholder="Digite aqui a palavra e pressione Enter...">
+    <div id="mensagem" class="mensagem-proibida"></div>
+    <img id="gifHarry" class="gif-harry"
+         src="https://media.tenor.com/84X3672KLCsAAAAM/harry-potter-harry-potter-characters.gif"
+         alt="Harry Potter calmo">
+  </div>
+
+  <!-- 🎵 Áudios -->
+  <audio id="somCalmo" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2021/09/06/audio_0e62ceff38.mp3?filename=relaxing-fantasy-9615.mp3" type="audio/mp3">
+  </audio>
+  <audio id="somCaos">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_29e8b26526.mp3?filename=explosion-6086.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    const input = document.getElementById('magia');
+    const cenario = document.getElementById('cenario');
+    const mensagem = document.getElementById('mensagem');
+    const gifHarry = document.getElementById('gifHarry');
+    const somCalmo = document.getElementById('somCalmo');
+    const somCaos = document.getElementById('somCaos');
+
+    const gifCalmo = "https://media.tenor.com/84X3672KLCsAAAAM/harry-potter-harry-potter-characters.gif";
+    const gifCaos = "https://usagif.com/wp-content/uploads/gify/fighting-battle-usagif-harry-potter.gif";
+
+    let somHabilitado = false;
+
+    function ativarSom() {
+      if (!somHabilitado) {
+        somCalmo.volume = 0.5;
+        somCaos.volume = 1;
+        somCalmo.play().catch(() => {});
+        somHabilitado = true;
+      }
+    }
+
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        ativarSom();
+
+        const valor = input.value.trim().toLowerCase();
+        const palavrasProibidas = ['sextou', '6tô'];
+
+        if (palavrasProibidas.includes(valor)) {
+          cenario.classList.remove('calmo');
+          cenario.classList.add('caos');
+          mensagem.textContent = 'Você invocou a palavra proibida';
+          gifHarry.src = gifCaos;
+
+          somCalmo.pause();
+          somCaos.currentTime = 0;
+          somCaos.play();
+        } else {
+          cenario.classList.remove('caos');
+          cenario.classList.add('calmo');
+          mensagem.textContent = 'Essa palavra não é proibida';
+          gifHarry.src = gifCalmo;
+
+          if (somCalmo.paused) {
+            somCalmo.play().catch(() => {});
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
